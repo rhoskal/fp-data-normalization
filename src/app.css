@@ -25,7 +25,7 @@ body {
   /* Enable kerning and optional ligatures */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  }
+}
 
 .split-screen {
   position: relative;

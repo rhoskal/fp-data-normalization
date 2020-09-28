@@ -1,5 +1,4 @@
 import React, { FC } from "react";
-import { pipe } from "fp-ts/pipeable";
 
 import data from "./data.json";
 import { INITIAL_STATE, mkReducer } from "./normalization";
@@ -14,11 +13,11 @@ const App: FC = () => {
     <div className="split-screen">
       <div>
         <h2 className="title">JSON</h2>
-        {JSON.stringify(data)}
+        <pre>{JSON.stringify(data, undefined, 2)}</pre>
       </div>
       <div>
         <h2 className="title">Normalized</h2>
-        {pipe(mkReducer(INITIAL_STATE, data), JSON.stringify)}
+        <pre>{JSON.stringify(mkReducer(INITIAL_STATE, data), null, 2)}</pre>
       </div>
     </div>
   );

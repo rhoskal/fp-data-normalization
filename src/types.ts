@@ -1,9 +1,11 @@
+import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 
 /**
  * Custom codecs
  */
 
+// use Iso instead for new types??
 const nonEmptyString = new t.Type<string, string, unknown>(
   "nonEmptyString",
   (input: unknown): input is string => typeof input === "string" && input.length > 0,
@@ -34,23 +36,35 @@ const Comment = t.type({
   body: nonEmptyString,
 });
 
-const Post = t.type({
-  id: idString,
-  title: nonEmptyString,
-  body: nonEmptyString,
-  createdAt: utcDateString,
-});
-
 const User = t.type({
   id: idString,
   handle: nonEmptyString,
   imgUrl: t.string,
 });
 
+// why do both Comment and Post pass when doing a decode? B/c the body have the same union set?
+const Post = t.type({
+  id: idString,
+  title: nonEmptyString,
+  body: nonEmptyString,
+  createdAt: utcDateString,
+  user: User,
+  // comments: Comment,
+  // status: "draft" | "draft" | "published"
+});
+
 /**
  * API types
  */
 
-export type Comment = t.TypeOf<typeof Comment>;
-export type Post = t.TypeOf<typeof Post>;
-export type User = t.TypeOf<typeof User>;
+export type ApiComment = t.TypeOf<typeof Comment>;
+export type ApiPost = t.TypeOf<typeof Post>;
+export type ApiUser = t.TypeOf<typeof User>;
+
+/**
+ * Type guards
+ */
+
+export const isPost = (p: unknown): p is ApiPost => {
+  return E.isRight(Post.decode(p));
+};

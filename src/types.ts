@@ -1,15 +1,28 @@
-import * as E from "fp-ts/Either";
 import * as t from "io-ts";
+// import { NonEmptyString } from "io-ts-types/lib/NonEmptyString";
+
+/**
+ * Type guards
+ */
+
+const isNonEmptyString = (input: unknown): input is string => {
+  return typeof input === "string" && input.length > 0;
+};
+
+const isIdString = (input: unknown): input is string => {
+  return isNonEmptyString(input) && /[A-Za-z]{12}/g.test(input);
+};
 
 /**
  * Custom codecs
  */
 
 // use Iso instead for new types??
+
 const nonEmptyString = new t.Type<string, string, unknown>(
   "nonEmptyString",
-  (input: unknown): input is string => typeof input === "string" && input.length > 0,
-  (input, context) => (typeof input === "string" ? t.success(input) : t.failure(input, context)),
+  isNonEmptyString,
+  (input, context) => (isNonEmptyString(input) ? t.success(input) : t.failure(input, context)),
   t.identity,
 );
 
@@ -22,8 +35,8 @@ const utcDateString = new t.Type<string, string, unknown>(
 
 const idString = new t.Type<string, string, unknown>(
   "idString",
-  (input: unknown): input is string => typeof input === "string" && /[A-Za-z]{12}/g.test(input),
-  (input, context) => (typeof input === "string" ? t.success(input) : t.failure(input, context)),
+  isIdString,
+  (input, context) => (isIdString(input) ? t.success(input) : t.failure(input, context)),
   t.identity,
 );
 
@@ -31,40 +44,37 @@ const idString = new t.Type<string, string, unknown>(
  * Composite types
  */
 
-const Comment = t.type({
+export const Comment = t.type({
   id: idString,
   body: nonEmptyString,
 });
 
-const User = t.type({
+export const Comments = t.array(Comment);
+
+export const User = t.type({
   id: idString,
   handle: nonEmptyString,
   imgUrl: t.string,
 });
 
 // why do both Comment and Post pass when doing a decode? B/c the body have the same union set?
-const Post = t.type({
+export const Post = t.type({
   id: idString,
   title: nonEmptyString,
   body: nonEmptyString,
   createdAt: utcDateString,
   user: User,
-  // comments: Comment,
-  // status: "draft" | "draft" | "published"
+  comments: Comments,
 });
 
-/**
- * API types
- */
-
-export type ApiComment = t.TypeOf<typeof Comment>;
-export type ApiPost = t.TypeOf<typeof Post>;
-export type ApiUser = t.TypeOf<typeof User>;
+export const Posts = t.array(Post);
 
 /**
- * Type guards
+ * Static types
  */
 
-export const isPost = (p: unknown): p is ApiPost => {
-  return E.isRight(Post.decode(p));
-};
+export type Comment = t.TypeOf<typeof Comment>;
+export type Comments = t.TypeOf<typeof Comments>;
+export type Post = t.TypeOf<typeof Post>;
+export type Posts = t.TypeOf<typeof Posts>;
+export type User = t.TypeOf<typeof User>;

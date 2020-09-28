@@ -1,10 +1,17 @@
 import faker from "faker";
+// import * as A from "fp-ts/Array";
 
-import { ApiPost } from "./types";
+import { Posts } from "./types";
 
 const uniqueId = () => faker.random.alpha({ count: 12 });
 
-export const fakeMeSomeData = (): Array<ApiPost> => [
+// const authors = () => {
+//   return A.reduce([], (as, a) => {
+//     return as.concat({ a: "d" });
+//   });
+// };
+
+export const fakeMeSomeData = (): Posts => [
   {
     id: uniqueId(),
     title: faker.lorem.words(8),
@@ -15,11 +22,11 @@ export const fakeMeSomeData = (): Array<ApiPost> => [
       handle: faker.internet.userName(), // email instead?
       imgUrl: faker.internet.avatar(),
     },
-    // comments: [
-    //   {
-    //     id: uniqueId(),
-    //     body: faker.lorem.paragraph(3),
-    //   },
-    // ],
+    comments: [
+      {
+        id: uniqueId(),
+        body: faker.lorem.paragraph(3),
+      },
+    ],
   },
 ];

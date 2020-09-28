@@ -12,6 +12,7 @@
     "@types/react-dom": "^16.9.0",
     "fp-ts": "^2.8.3",
     "io-ts": "^2.2.10",
+    "io-ts-types": "^0.5.11",
     "monocle-ts": "^2.3.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

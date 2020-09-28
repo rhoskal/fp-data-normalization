@@ -1,11 +1,9 @@
 import * as A from "fp-ts/Array";
-import * as O from "fp-ts/Option";
 import * as R from "fp-ts/Record";
 import { pipe } from "fp-ts/pipeable";
 import { Lens } from "monocle-ts";
-import { atRecord } from "monocle-ts/lib/At";
 
-import { ApiComment, ApiPost, ApiUser, isPost } from "./types";
+import { Comment, Comments, Post, Posts, User } from "./types";
 
 /**
  * Types
@@ -69,51 +67,49 @@ const atComment = (id: string) => Lens.fromProp<NormalizedComments>()(id);
  * Upserts
  */
 
-const upsertComment = (c: ApiComment) => (state: AppState) => {
-  console.log("upserting comment: ", c);
-
+const upsertComment = (comments: Comments) => (state: AppState): AppState => {
   return pipe(
-    state,
-    commentsLens.compose(atComment(c.id)).modify(
-      (prevComment): CommentEntity => ({
-        ...prevComment,
-        authorId: "some id",
-        body: c.body,
-        createdAt: "some date",
-      }),
-    ),
+    comments,
+    A.reduce<Comment, AppState>(state, (newState, comment) => {
+      return pipe(
+        newState,
+        commentsLens.compose(atComment(comment.id)).modify(
+          (prevComment): CommentEntity => ({
+            ...prevComment,
+            authorId: "some id",
+            body: comment.body,
+            createdAt: "some date",
+          }),
+        ),
+      );
+    }),
   );
 };
 
-const upsertUser = (u: ApiUser) => (state: AppState) => {
-  console.log("upserting user: ", u);
-
+const upsertUser = (user: User) => (state: AppState): AppState => {
   return pipe(
     state,
-    usersLens.compose(atUser(u.id)).modify(
+    usersLens.compose(atUser(user.id)).modify(
       (prevUser): UserEntity => ({
         ...prevUser,
-        handle: u.handle,
-        imgUrl: u.imgUrl,
+        handle: user.handle,
+        imgUrl: user.imgUrl,
       }),
     ),
   );
+  // should users have a posts: [] of ids for reference? Check Redux normalization guide
 };
 
-// can this fail? Yes if the post is not valid. Should this return an Either?
-const upsertPost = (p: ApiPost) => (state: AppState) => {
-  console.log("upserting post: ", p);
-
-  // show the equivalent of doing this in normal JS
+const upsertPost = (post: Post) => (state: AppState): AppState => {
   return pipe(
     state,
-    postsLens.compose(atPost(p.id)).modify(
+    postsLens.compose(atPost(post.id)).modify(
       (prevPost): PostEntity => ({
         ...prevPost,
-        authorId: p.user.id,
-        body: p.body,
-        createdAt: p.createdAt,
-        title: p.title,
+        authorId: post.user.id,
+        body: post.body,
+        createdAt: post.createdAt,
+        title: post.title,
       }),
     ),
   );
@@ -126,23 +122,13 @@ const upsertPost = (p: ApiPost) => (state: AppState) => {
  */
 
 // compile time vs runtime data to see error handling
-export const mkReducer = (initialState: AppState, data: Array<ApiPost>): AppState => {
+
+// how do we handle possible null values?
+export const mkReducer = (initialState: AppState, data: Posts): AppState => {
   return pipe(
     data,
-    A.reduce(initialState, (state, p) => {
-      // should this logic be moved outside of the Domain Logic? Maybe a API service?
-      if (isPost(p)) {
-        return pipe(
-          state,
-          upsertPost(p),
-          upsertUser(p.user),
-          // upsertComment(p.comments)
-        );
-      } else {
-        console.warn("Ignoring invalid post: ", p);
-
-        return state;
-      }
+    A.reduce<Post, AppState>(initialState, (state, p) => {
+      return pipe(state, upsertPost(p), upsertUser(p.user), upsertComment(p.comments));
     }),
   );
 };

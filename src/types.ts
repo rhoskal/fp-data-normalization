@@ -44,18 +44,20 @@ const idString = new t.Type<string, string, unknown>(
  * Composite types
  */
 
-export const Comment = t.type({
-  id: idString,
-  body: nonEmptyString,
-});
-
-export const Comments = t.array(Comment);
-
 export const User = t.type({
   id: idString,
   handle: nonEmptyString,
   imgUrl: t.string,
 });
+
+export const Comment = t.type({
+  id: idString,
+  body: nonEmptyString,
+  createdAt: utcDateString,
+  user: User,
+});
+
+export const Comments = t.array(Comment);
 
 // why do both Comment and Post pass when doing a decode? B/c the body have the same union set?
 export const Post = t.type({

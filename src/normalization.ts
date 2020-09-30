@@ -5,7 +5,7 @@ import { eqString } from "fp-ts/lib/Eq";
 import { pipe } from "fp-ts/pipeable";
 import { Lens } from "monocle-ts";
 
-import { Comment, Comments, Post, Posts, User } from "./types";
+import { Comment, Post, Posts } from "./types";
 
 /**
  * Types
@@ -47,7 +47,7 @@ export type AppState = {
   };
 };
 
-export const INITIAL_STATE = {
+export const INITIAL_STATE: AppState = {
   entities: {
     comments: R.empty,
     posts: R.empty,
@@ -73,9 +73,9 @@ const atComment = (id: string) => Lens.fromProp<NormalizedComments>()(id);
  * Upserts
  */
 
-const upsertComment = (comments: Comments) => (state: AppState): AppState => {
+const upsertComment = (post: Post) => (state: AppState): AppState => {
   return pipe(
-    comments,
+    post.comments,
     A.reduce<Comment, AppState>(state, (newState, comment) => {
       return pipe(
         newState,
@@ -90,9 +90,13 @@ const upsertComment = (comments: Comments) => (state: AppState): AppState => {
                 body: comment.body,
                 createdAt: comment.createdAt,
               }),
+              postsLens.compose(atPost(post.id)).modify((prevPost) => ({
+                ...prevPost,
+                comments: A.uniq(eqString)([...prevPost.comments, comment.id]),
+              })),
             );
           },
-          (_) => {
+          (_comment) => {
             return pipe(
               state,
               commentsLens.compose(atComment(comment.id)).modify(
@@ -104,12 +108,15 @@ const upsertComment = (comments: Comments) => (state: AppState): AppState => {
             );
           },
         ),
+        upsertUser(post),
       );
     }),
   );
 };
 
-const upsertUser = (user: User) => (state: AppState): AppState => {
+const upsertUser = (post: Post) => (state: AppState): AppState => {
+  const user = post.user;
+
   return pipe(
     state,
     R.lookup(user.id),
@@ -124,7 +131,7 @@ const upsertUser = (user: User) => (state: AppState): AppState => {
           }),
         );
       },
-      (_) => {
+      (_user) => {
         return pipe(
           state,
           usersLens.compose(atUser(user.id)).modify(
@@ -154,13 +161,11 @@ const upsertPost = (post: Post) => (state: AppState): AppState => {
             body: post.body,
             createdAt: post.createdAt,
             title: post.title,
-            comments: A.reduce<Comment, Array<string>>(A.empty, (ids, c) =>
-              A.uniq(eqString)([...ids, c.id]),
-            )(post.comments),
+            comments: A.empty,
           }),
         );
       },
-      (_) => {
+      (_post) => {
         return pipe(
           state,
           postsLens.compose(atPost(post.id)).modify(
@@ -168,31 +173,26 @@ const upsertPost = (post: Post) => (state: AppState): AppState => {
               ...prevPost,
               body: post.body,
               title: post.title,
-              comments: A.reduce<Comment, Array<string>>(prevPost.comments, (ids, c) =>
-                A.uniq(eqString)([...ids, c.id]),
-              )(post.comments),
             }),
           ),
         );
       },
     ),
+    upsertUser(post),
   );
 };
 
 /**
  * Reducer
+ * @param data Posts to normalize
  * @param initialState
- * @param data
  */
 
-// compile time vs runtime data to see error handling
-
-// how do we handle possible null values?
-export const mkReducer = (initialState: AppState, data: Posts): AppState => {
+export const reducer = (data: Posts, initialState = INITIAL_STATE): AppState => {
   return pipe(
     data,
     A.reduce<Post, AppState>(initialState, (state, p) => {
-      return pipe(state, upsertPost(p), upsertUser(p.user), upsertComment(p.comments));
+      return pipe(state, upsertPost(p), upsertComment(p));
     }),
   );
 };

@@ -1,5 +1,4 @@
 import * as t from "io-ts";
-// import { NonEmptyString } from "io-ts-types/lib/NonEmptyString";
 
 /**
  * Type guards
@@ -16,8 +15,6 @@ const isIdString = (input: unknown): input is string => {
 /**
  * Custom codecs
  */
-
-// use Iso instead for new types??
 
 const nonEmptyString = new t.Type<string, string, unknown>(
   "nonEmptyString",
@@ -59,7 +56,6 @@ export const Comment = t.type({
 
 export const Comments = t.array(Comment);
 
-// why do both Comment and Post pass when doing a decode? B/c the body have the same union set?
 export const Post = t.type({
   id: idString,
   title: nonEmptyString,

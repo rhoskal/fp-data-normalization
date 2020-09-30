@@ -26,12 +26,11 @@ export const fakeMeSomeData = (): Posts => [
     title: shortContent(),
     body: longContent(),
     createdAt: recentDate(),
-    // user: {
-    //   id: uniqueId(),
-    //   handle: faker.internet.userName(),
-    //   imgUrl: faker.internet.avatar(),
-    // },
-    user: users[0],
+    user: {
+      id: uniqueId(),
+      handle: faker.internet.userName(),
+      imgUrl: faker.internet.avatar(),
+    },
     comments: [
       {
         id: uniqueId(),

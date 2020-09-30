@@ -4,15 +4,13 @@ import * as E from "fp-ts/Either";
 import { PathReporter } from "io-ts/lib/PathReporter";
 
 import data from "./data.json";
-import { INITIAL_STATE, mkReducer } from "./normalization";
-import { fakeMeSomeData } from "./mocker";
+import { reducer } from "./normalization";
 import { Posts } from "./types";
 
-// Doing it this way ignores ALL posts if there is even just one small property missing/incorrect... not very user friendly
-// But how do you get around this? If I make some deeply nested field empty then the first decode fails when I split the decoding up into 3 steps
 /**
  * Blog Service
  */
+
 const fetchPosts = (): Posts => {
   const result = Posts.decode(data);
 
@@ -30,7 +28,6 @@ const fetchPosts = (): Posts => {
 };
 
 const App: FC = () => {
-  console.log(JSON.stringify(fakeMeSomeData()));
   const posts: Posts = fetchPosts();
 
   return (
@@ -41,7 +38,7 @@ const App: FC = () => {
       </div>
       <div>
         <h2 className="title">Normalized</h2>
-        <pre>{JSON.stringify(mkReducer(INITIAL_STATE, posts), null, 2)}</pre>
+        <pre>{JSON.stringify(reducer(posts), null, 2)}</pre>
       </div>
     </div>
   );

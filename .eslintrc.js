@@ -20,6 +20,13 @@ module.exports = {
   },
   plugins: ["prettier", "react", "@typescript-eslint", "import"],
   rules: {
+    "@typescript-eslint/no-unused-vars": [
+      1,
+      {
+        args: "after-used",
+        argsIgnorePattern: "^_",
+      },
+    ],
     "import/newline-after-import": 2,
     "import/no-cycle": 2,
     "import/no-relative-parent-imports": 2,

@@ -1,34 +1,36 @@
 import * as t from "io-ts";
-import { NonEmptyString } from "io-ts-types";
 
 /**
  * Type guards
  */
 
-const isNonEmptyString = (input: unknown): input is NonEmptyString => {
+const isNonEmptyString = (input: unknown): input is string => {
   return typeof input === "string" && input.length > 0;
 };
 
 const isIdString = (input: unknown): input is string => {
-  return isNonEmptyString(input) && /[A-Za-z]{12}/g.test(input);
+  return typeof input === "string" && /[A-Za-z]{12}/g.test(input);
+};
+
+const isValidDateString = (input: unknown): input is string => {
+  return typeof input === "string" && !isNaN(Date.parse(input));
 };
 
 /**
  * Custom codecs
  */
 
-const nonEmptyString = new t.Type<string, string, unknown>(
+const NonEmptyString = new t.Type<string, string, unknown>(
   "nonEmptyString",
   isNonEmptyString,
   (input, context) => (isNonEmptyString(input) ? t.success(input) : t.failure(input, context)),
   t.identity,
 );
 
-// change me
-const utcDateString = new t.Type<string, string, unknown>(
+const UtcDateString = new t.Type<string, string, unknown>(
   "utcDateString",
-  (input: unknown): input is string => typeof input === "string" && input.length > 0,
-  (input, context) => (typeof input === "string" ? t.success(input) : t.failure(input, context)),
+  isValidDateString,
+  (input, context) => (isValidDateString(input) ? t.success(input) : t.failure(input, context)),
   t.identity,
 );
 
@@ -45,14 +47,14 @@ const IdString = new t.Type<string, string, unknown>(
 
 export const User = t.type({
   id: IdString,
-  handle: nonEmptyString,
+  handle: NonEmptyString,
   imgUrl: t.string,
 });
 
 export const Comment = t.type({
   id: IdString,
-  body: nonEmptyString,
-  createdAt: utcDateString,
+  body: NonEmptyString,
+  createdAt: UtcDateString,
   user: User,
 });
 
@@ -60,9 +62,9 @@ export const Comments = t.array(Comment);
 
 export const Post = t.type({
   id: IdString,
-  title: nonEmptyString,
-  body: nonEmptyString,
-  createdAt: utcDateString,
+  title: NonEmptyString,
+  body: NonEmptyString,
+  createdAt: UtcDateString,
   user: User,
   comments: Comments,
 });
@@ -79,3 +81,5 @@ export type Post = t.TypeOf<typeof Post>;
 export type Posts = t.TypeOf<typeof Posts>;
 export type User = t.TypeOf<typeof User>;
 export type IdString = t.TypeOf<typeof IdString>;
+export type NonEmptyString = t.TypeOf<typeof NonEmptyString>;
+export type UtcDateString = t.TypeOf<typeof UtcDateString>;

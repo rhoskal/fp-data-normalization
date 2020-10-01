@@ -5,7 +5,16 @@ import { eqString } from "fp-ts/lib/Eq";
 import { pipe } from "fp-ts/pipeable";
 import { Lens } from "monocle-ts";
 
-import { Comment, Comments, Post, Posts, User, IdString } from "./types";
+import {
+  Comment,
+  Comments,
+  Post,
+  Posts,
+  User,
+  IdString,
+  NonEmptyString,
+  UtcDateString,
+} from "./types";
 
 /**
  * Types
@@ -13,23 +22,23 @@ import { Comment, Comments, Post, Posts, User, IdString } from "./types";
 
 type CommentEntity = {
   id: IdString;
+  body: NonEmptyString;
+  createdAt: UtcDateString;
   userId: IdString;
-  body: string;
-  createdAt: string;
 };
 
 type PostEntity = {
   id: IdString;
-  userId: IdString;
-  body: string;
-  createdAt: string;
-  title: string;
+  body: NonEmptyString;
   comments: Array<IdString>;
+  createdAt: UtcDateString;
+  title: NonEmptyString;
+  userId: IdString;
 };
 
 type UserEntity = {
   id: IdString;
-  handle: string;
+  handle: NonEmptyString;
   imgUrl: string;
 };
 

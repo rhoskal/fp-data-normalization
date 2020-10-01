@@ -33,7 +33,7 @@ const App: FC = () => {
   return (
     <div className="split-screen">
       <div>
-        <h2 className="title">JSON</h2>
+        <h2 className="title">API Response</h2>
         <pre>{JSON.stringify(posts, null, 2)}</pre>
       </div>
       <div>

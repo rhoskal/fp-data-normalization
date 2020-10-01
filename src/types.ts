@@ -1,10 +1,11 @@
 import * as t from "io-ts";
+import { NonEmptyString } from "io-ts-types";
 
 /**
  * Type guards
  */
 
-const isNonEmptyString = (input: unknown): input is string => {
+const isNonEmptyString = (input: unknown): input is NonEmptyString => {
   return typeof input === "string" && input.length > 0;
 };
 
@@ -23,6 +24,7 @@ const nonEmptyString = new t.Type<string, string, unknown>(
   t.identity,
 );
 
+// change me
 const utcDateString = new t.Type<string, string, unknown>(
   "utcDateString",
   (input: unknown): input is string => typeof input === "string" && input.length > 0,
@@ -30,7 +32,7 @@ const utcDateString = new t.Type<string, string, unknown>(
   t.identity,
 );
 
-const idString = new t.Type<string, string, unknown>(
+const IdString = new t.Type<string, string, unknown>(
   "idString",
   isIdString,
   (input, context) => (isIdString(input) ? t.success(input) : t.failure(input, context)),
@@ -42,13 +44,13 @@ const idString = new t.Type<string, string, unknown>(
  */
 
 export const User = t.type({
-  id: idString,
+  id: IdString,
   handle: nonEmptyString,
   imgUrl: t.string,
 });
 
 export const Comment = t.type({
-  id: idString,
+  id: IdString,
   body: nonEmptyString,
   createdAt: utcDateString,
   user: User,
@@ -57,7 +59,7 @@ export const Comment = t.type({
 export const Comments = t.array(Comment);
 
 export const Post = t.type({
-  id: idString,
+  id: IdString,
   title: nonEmptyString,
   body: nonEmptyString,
   createdAt: utcDateString,
@@ -76,3 +78,4 @@ export type Comments = t.TypeOf<typeof Comments>;
 export type Post = t.TypeOf<typeof Post>;
 export type Posts = t.TypeOf<typeof Posts>;
 export type User = t.TypeOf<typeof User>;
+export type IdString = t.TypeOf<typeof IdString>;

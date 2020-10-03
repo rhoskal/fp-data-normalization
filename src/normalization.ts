@@ -70,7 +70,6 @@ export const INITIAL_STATE: AppState = {
 
 const postsLens = Lens.fromPath<AppState>()(["entities", "posts"]);
 const atPost = (id: IdString) => Lens.fromProp<NormalizedPosts>()(id);
-// const atPost = () => atRecord<PostEntity>();
 
 const usersLens = Lens.fromPath<AppState>()(["entities", "users"]);
 const atUser = (id: IdString) => Lens.fromProp<NormalizedUsers>()(id);

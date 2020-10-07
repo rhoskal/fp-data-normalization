@@ -1,28 +1,33 @@
 import React, { FC } from "react";
 import { pipe } from "fp-ts/pipeable";
-import * as E from "fp-ts/Either";
-import { PathReporter } from "io-ts/lib/PathReporter";
+import * as Th from "fp-ts/These";
+import { failure } from "io-ts/lib/PathReporter";
 
 import data from "./data.json";
 import { reducer } from "./normalization";
-import { Posts } from "./types";
+import { Posts, Posts_ } from "./types";
 
 /**
  * Blog Service
  */
 
 const fetchPosts = (): Posts => {
-  const result = Posts.decode(data);
+  const result = Posts_.decode_(data);
 
   return pipe(
     result,
-    E.fold(
-      () => {
-        console.warn(PathReporter.report(result));
+    Th.fold(
+      (errors) => {
+        console.warn(failure(errors));
 
         return [];
       },
       (posts) => posts,
+      (errors, posts) => {
+        console.warn(failure(errors));
+
+        return posts;
+      },
     ),
   );
 };

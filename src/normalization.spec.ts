@@ -1,10 +1,10 @@
 import data from "./data.json";
-import { reducer } from "./normalization";
+import { reducer, AppState } from "./normalization";
 
 describe("Normalized Posts", () => {
   it("reducer should take in un-normalized posts and normalize them", () => {
-    const actual = reducer(data);
-    const expected = {
+    const actual: AppState = reducer(data);
+    const expected: AppState = {
       entities: {
         comments: {
           jsyrjkxwtpmu: {

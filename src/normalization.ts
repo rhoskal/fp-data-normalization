@@ -16,7 +16,7 @@ import {
   UtcDateString,
 } from "./types";
 
-/**
+/*
  * Types
  */
 
@@ -64,7 +64,7 @@ export const INITIAL_STATE: AppState = {
   },
 };
 
-/**
+/*
  * Optics
  */
 
@@ -77,7 +77,7 @@ const atUser = (id: IdString) => Lens.fromProp<NormalizedUsers>()(id);
 const commentsLens = Lens.fromPath<AppState>()(["entities", "comments"]);
 const atComment = (id: IdString) => Lens.fromProp<NormalizedComments>()(id);
 
-/**
+/*
  * Upserts
  */
 
@@ -194,7 +194,6 @@ const upsertPost = (post: Post) => (state: AppState): AppState => {
  * @param data Posts to normalize
  * @param initialState
  */
-
 export const reducer = (data: Posts, initialState = INITIAL_STATE): AppState => {
   return pipe(
     data,

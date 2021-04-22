@@ -1,5 +1,7 @@
 import * as t from "io-ts";
 
+import { array_ } from "./io-ts-ext";
+
 /**
  * Type guards
  */
@@ -70,6 +72,8 @@ export const Post = t.type({
 });
 
 export const Posts = t.array(Post);
+
+export const Posts_ = array_(Post);
 
 /**
  * Static types

@@ -1,5 +1,6 @@
-import React, { FC } from "react";
+import React from "react";
 import { pipe } from "fp-ts/pipeable";
+import * as A from "fp-ts/Array";
 import * as E from "fp-ts/Either";
 import { PathReporter } from "io-ts/lib/PathReporter";
 
@@ -7,8 +8,8 @@ import data from "./data.json";
 import { reducer } from "./normalization";
 import { Posts } from "./types";
 
-/**
- * Blog Service
+/*
+ * Main
  */
 
 const fetchPosts = (): Posts => {
@@ -20,14 +21,14 @@ const fetchPosts = (): Posts => {
       () => {
         console.warn(PathReporter.report(result));
 
-        return [];
+        return A.empty;
       },
       (posts) => posts,
     ),
   );
 };
 
-const App: FC = () => {
+const App = (): JSX.Element => {
   const posts: Posts = fetchPosts();
 
   return (

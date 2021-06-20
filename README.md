@@ -2,7 +2,7 @@
 
 # fp-ts data normalization
 
-Write your own type-safe reducer to normalize your data
+Write your own type-safe reducer to normalize your data. Blog post [here](https://dev.to/hansjhoffman/write-your-own-type-safe-reducer-to-normalize-your-data-1mpn). View app [here](https://awesome-hypatia-750dd2.netlify.app/). 
 
 ## Running
 

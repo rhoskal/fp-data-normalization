@@ -3,6 +3,8 @@
 with pkgs;
 
 let
+  inherit (lib) optionals;
+
   basePackages = [
     git
     nodejs-14_x
@@ -11,7 +13,13 @@ let
     yarn
   ];
 
-  inputs = basePackages;
+  inputs = basePackages
+    ++ optionals stdenv.isLinux inotify-tools
+    ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
+      # https://github.com/NixOS/nixpkgs/blob/master/pkgs/os-specific/darwin/apple-sdk/frameworks.nix
+      CoreFoundation
+      CoreServices
+    ]);
 in
   mkShell {
     buildInputs = inputs;

@@ -1,6 +1,6 @@
 import * as t from "io-ts";
 
-/**
+/*
  * Type guards
  */
 
@@ -16,7 +16,7 @@ const isValidDateString = (input: unknown): input is string => {
   return typeof input === "string" && !isNaN(Date.parse(input));
 };
 
-/**
+/*
  * Custom codecs
  */
 
@@ -41,7 +41,7 @@ const IdString = new t.Type<string, string, unknown>(
   t.identity,
 );
 
-/**
+/*
  * Composite types
  */
 
@@ -71,7 +71,7 @@ export const Post = t.type({
 
 export const Posts = t.array(Post);
 
-/**
+/*
  * Static types
  */
 

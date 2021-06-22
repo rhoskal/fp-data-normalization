@@ -8,37 +8,35 @@
     "format": "prettier --write 'src/**/*.{css,scss,ts,tsx}'",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
+    "prepare": "husky install",
     "start": "HTTPS=true BROWSER=none react-scripts start",
     "test": "react-scripts test"
   },
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "fp-ts": "^2.8.3",
-    "io-ts": "^2.2.10",
-    "monocle-ts": "^2.3.3",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.3",
-    "typescript": "~3.7.2"
+    "fp-ts": "2.10.5",
+    "io-ts": "2.2.16",
+    "monocle-ts": "2.3.10",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-scripts": "4.0.3",
+    "typescript": "4.3.4"
   },
   "devDependencies": {
-    "@types/faker": "^5.1.2",
-    "@typescript-eslint/eslint-plugin": "^4.2.0",
-    "@typescript-eslint/parser": "^4.2.0",
-    "eslint": "^6.6.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.21.2",
-    "faker": "^5.1.0",
-    "husky": "^4.3.0",
-    "lint-staged": "^10.4.0",
-    "prettier": "^2.1.2"
+    "@types/faker": "5.5.6",
+    "@types/jest": "26.0.23",
+    "@types/node": "15.12.4",
+    "@types/react": "17.0.11",
+    "@types/react-dom": "17.0.8",
+    "@typescript-eslint/eslint-plugin": "4.28.0",
+    "@typescript-eslint/parser": "4.28.0",
+    "eslint": "7.29.0",
+    "eslint-plugin-import": "2.23.4",
+    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-react": "7.24.0",
+    "faker": "5.5.3",
+    "husky": "6.0.0",
+    "lint-staged": "11.0.0",
+    "prettier": "2.3.1"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -54,11 +52,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "tsc && yarn lint-staged"
-    }
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [

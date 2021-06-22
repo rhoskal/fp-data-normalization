@@ -81,113 +81,119 @@ const atComment = (id: IdString) => Lens.fromProp<NormalizedComments>()(id);
  * Upserts
  */
 
-const upsertComments = (postId: IdString, comments: Comments) => (state: AppState): AppState => {
-  return pipe(
-    comments,
-    A.reduce<Comment, AppState>(state, (newState, comment) => {
-      return pipe(
-        newState,
-        R.lookup(comment.id),
-        O.fold(
-          () => {
-            return pipe(
-              newState,
-              commentsLens.compose(atComment(comment.id)).set({
-                id: comment.id,
-                userId: comment.user.id,
-                body: comment.body,
-                createdAt: comment.createdAt,
-              }),
-              postsLens.compose(atPost(postId)).modify((prevPost) => ({
-                ...prevPost,
-                comments: A.uniq(eqString)(A.snoc(prevPost.comments, comment.id)),
-              })),
-            );
-          },
-          (_comment) => {
-            return pipe(
-              state,
-              commentsLens.compose(atComment(comment.id)).modify(
-                (prevComment): CommentEntity => ({
-                  ...prevComment,
+const upsertComments =
+  (postId: IdString, comments: Comments) =>
+  (state: AppState): AppState => {
+    return pipe(
+      comments,
+      A.reduce<Comment, AppState>(state, (newState, comment) => {
+        return pipe(
+          newState,
+          R.lookup(comment.id),
+          O.fold(
+            () => {
+              return pipe(
+                newState,
+                commentsLens.compose(atComment(comment.id)).set({
+                  id: comment.id,
+                  userId: comment.user.id,
                   body: comment.body,
+                  createdAt: comment.createdAt,
                 }),
-              ),
-            );
-          },
-        ),
-        upsertUser(comment.user),
-      );
-    }),
-  );
-};
-
-const upsertUser = (user: User) => (state: AppState): AppState => {
-  return pipe(
-    state,
-    R.lookup(user.id),
-    O.fold(
-      () => {
-        return pipe(
-          state,
-          usersLens.compose(atUser(user.id)).set({
-            id: user.id,
-            handle: user.handle,
-            imgUrl: user.imgUrl,
-          }),
+                postsLens.compose(atPost(postId)).modify((prevPost) => ({
+                  ...prevPost,
+                  comments: A.uniq(eqString)(A.snoc(prevPost.comments, comment.id)),
+                })),
+              );
+            },
+            (_comment) => {
+              return pipe(
+                state,
+                commentsLens.compose(atComment(comment.id)).modify(
+                  (prevComment): CommentEntity => ({
+                    ...prevComment,
+                    body: comment.body,
+                  }),
+                ),
+              );
+            },
+          ),
+          upsertUser(comment.user),
         );
-      },
-      (_user) => {
-        return pipe(
-          state,
-          usersLens.compose(atUser(user.id)).modify(
-            (prevUser): UserEntity => ({
-              ...prevUser,
+      }),
+    );
+  };
+
+const upsertUser =
+  (user: User) =>
+  (state: AppState): AppState => {
+    return pipe(
+      state,
+      R.lookup(user.id),
+      O.fold(
+        () => {
+          return pipe(
+            state,
+            usersLens.compose(atUser(user.id)).set({
+              id: user.id,
               handle: user.handle,
               imgUrl: user.imgUrl,
             }),
-          ),
-        );
-      },
-    ),
-  );
-};
+          );
+        },
+        (_user) => {
+          return pipe(
+            state,
+            usersLens.compose(atUser(user.id)).modify(
+              (prevUser): UserEntity => ({
+                ...prevUser,
+                handle: user.handle,
+                imgUrl: user.imgUrl,
+              }),
+            ),
+          );
+        },
+      ),
+    );
+  };
 
-const upsertPost = (post: Post) => (state: AppState): AppState => {
-  return pipe(
-    state,
-    R.lookup(post.id),
-    O.fold(
-      () => {
-        return pipe(
-          state,
-          postsLens.compose(atPost(post.id)).set({
-            id: post.id,
-            userId: post.user.id,
-            body: post.body,
-            createdAt: post.createdAt,
-            title: post.title,
-            comments: A.empty,
-          }),
-        );
-      },
-      (_post) => {
-        return pipe(
-          state,
-          postsLens.compose(atPost(post.id)).modify(
-            (prevPost): PostEntity => ({
-              ...prevPost,
+const upsertPost =
+  (post: Post) =>
+  (state: AppState): AppState => {
+    return pipe(
+      state,
+      R.lookup(post.id),
+      O.fold(
+        () => {
+          return pipe(
+            state,
+            postsLens.compose(atPost(post.id)).set({
+              id: post.id,
+              userId: post.user.id,
               body: post.body,
+              createdAt: post.createdAt,
               title: post.title,
+              comments: A.empty,
             }),
-          ),
-        );
-      },
-    ),
-    upsertUser(post.user),
-    upsertComments(post.id, post.comments),
-  );
-};
+          );
+        },
+        (_post) => {
+          return pipe(
+            state,
+            postsLens.compose(atPost(post.id)).modify(
+              (prevPost): PostEntity => ({
+                ...prevPost,
+                body: post.body,
+                title: post.title,
+              }),
+            ),
+          );
+        },
+      ),
+      upsertUser(post.user),
+      upsertComments(post.id, post.comments),
+    );
+  };
 
 /**
  * Reducer

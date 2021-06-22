@@ -54,9 +54,12 @@
     ]
   },
   "lint-staged": {
+    "**/*.{css,scss}": [
+      "prettier --write"
+    ],
     "**/*.{ts,tsx}": [
-      "yarn lint:fix",
-      "yarn format"
+      "eslint --fix",
+      "prettier --write"
     ]
   }
 }

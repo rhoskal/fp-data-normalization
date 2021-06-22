@@ -1,8 +1,8 @@
-import * as A from "fp-ts/Array";
+import * as RA from "fp-ts/ReadonlyArray";
 import * as O from "fp-ts/Option";
 import * as R from "fp-ts/Record";
-import { eqString } from "fp-ts/lib/Eq";
-import { pipe } from "fp-ts/pipeable";
+import * as Str from "fp-ts/string";
+import { pipe } from "fp-ts/function";
 import { Lens } from "monocle-ts";
 
 import {
@@ -30,7 +30,7 @@ type CommentEntity = {
 type PostEntity = {
   id: IdString;
   body: NonEmptyString;
-  comments: Array<IdString>;
+  comments: ReadonlyArray<IdString>;
   createdAt: UtcDateString;
   title: NonEmptyString;
   userId: IdString;
@@ -58,9 +58,9 @@ export type AppState = {
 
 export const INITIAL_STATE: AppState = {
   entities: {
-    comments: R.empty,
-    posts: R.empty,
-    users: R.empty,
+    comments: {},
+    posts: {},
+    users: {},
   },
 };
 
@@ -86,7 +86,7 @@ const upsertComments =
   (state: AppState): AppState => {
     return pipe(
       comments,
-      A.reduce<Comment, AppState>(state, (newState, comment) => {
+      RA.reduce<Comment, AppState>(state, (newState, comment) => {
         return pipe(
           newState,
           R.lookup(comment.id),
@@ -102,7 +102,7 @@ const upsertComments =
                 }),
                 postsLens.compose(atPost(postId)).modify((prevPost) => ({
                   ...prevPost,
-                  comments: A.uniq(eqString)(A.snoc(prevPost.comments, comment.id)),
+                  comments: RA.uniq(Str.Eq)(RA.append(comment.id)(prevPost.comments)),
                 })),
               );
             },
@@ -173,7 +173,7 @@ const upsertPost =
               body: post.body,
               createdAt: post.createdAt,
               title: post.title,
-              comments: A.empty,
+              comments: [],
             }),
           );
         },
@@ -203,7 +203,7 @@ const upsertPost =
 export const reducer = (data: Posts, initialState = INITIAL_STATE): AppState => {
   return pipe(
     data,
-    A.reduce<Post, AppState>(initialState, (state, p) => {
+    RA.reduce<Post, AppState>(initialState, (state, p) => {
       return pipe(state, upsertPost(p));
     }),
   );

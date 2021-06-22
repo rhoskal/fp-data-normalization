@@ -1,6 +1,5 @@
 import React from "react";
-import { pipe } from "fp-ts/pipeable";
-import * as A from "fp-ts/Array";
+import { pipe } from "fp-ts/function";
 import * as E from "fp-ts/Either";
 import { PathReporter } from "io-ts/lib/PathReporter";
 
@@ -21,7 +20,7 @@ const fetchPosts = (): Posts => {
       () => {
         console.warn(PathReporter.report(result));
 
-        return A.empty;
+        return [];
       },
       (posts) => posts,
     ),

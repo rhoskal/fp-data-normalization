@@ -1,6 +1,6 @@
 import * as RA from "fp-ts/ReadonlyArray";
 import * as O from "fp-ts/Option";
-import * as R from "fp-ts/Record";
+import * as RR from "fp-ts/ReadonlyRecord";
 import * as Str from "fp-ts/string";
 import { pipe } from "fp-ts/function";
 import { Lens } from "monocle-ts";
@@ -20,41 +20,41 @@ import {
  * Types
  */
 
-type CommentEntity = {
+type CommentEntity = Readonly<{
   id: IdString;
   body: NonEmptyString;
   createdAt: UtcDateString;
   userId: IdString;
-};
+}>;
 
-type PostEntity = {
+type PostEntity = Readonly<{
   id: IdString;
   body: NonEmptyString;
   comments: ReadonlyArray<IdString>;
   createdAt: UtcDateString;
   title: NonEmptyString;
   userId: IdString;
-};
+}>;
 
-type UserEntity = {
+type UserEntity = Readonly<{
   id: IdString;
   handle: NonEmptyString;
   imgUrl: string;
-};
+}>;
 
-type NormalizedComments = Record<string, CommentEntity>;
+type NormalizedComments = Readonly<Record<string, CommentEntity>>;
 
-type NormalizedPosts = Record<string, PostEntity>;
+type NormalizedPosts = Readonly<Record<string, PostEntity>>;
 
-type NormalizedUsers = Record<string, UserEntity>;
+type NormalizedUsers = Readonly<Record<string, UserEntity>>;
 
-export type AppState = {
+export type AppState = Readonly<{
   entities: {
     comments: NormalizedComments;
     posts: NormalizedPosts;
     users: NormalizedUsers;
   };
-};
+}>;
 
 export const INITIAL_STATE: AppState = {
   entities: {
@@ -89,7 +89,7 @@ const upsertComments =
       RA.reduce<Comment, AppState>(state, (newState, comment) => {
         return pipe(
           newState,
-          R.lookup(comment.id),
+          RR.lookup(comment.id),
           O.fold(
             () => {
               return pipe(
@@ -129,7 +129,7 @@ const upsertUser =
   (state: AppState): AppState => {
     return pipe(
       state,
-      R.lookup(user.id),
+      RR.lookup(user.id),
       O.fold(
         () => {
           return pipe(
@@ -162,7 +162,7 @@ const upsertPost =
   (state: AppState): AppState => {
     return pipe(
       state,
-      R.lookup(post.id),
+      RR.lookup(post.id),
       O.fold(
         () => {
           return pipe(

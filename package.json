@@ -4,13 +4,15 @@
   "private": true,
   "scripts": {
     "build": "react-scripts build",
-    "eject": "react-scripts eject",
     "format": "prettier --write 'src/**/*.{css,scss,ts,tsx}'",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix",
     "prepare": "husky install",
     "start": "HTTPS=true BROWSER=none react-scripts start",
     "test": "react-scripts test"
+  },
+  "engines": {
+    "node": ">=12.17.0"
   },
   "dependencies": {
     "fp-ts": "2.10.5",
@@ -60,6 +62,16 @@
     "**/*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write"
+    ]
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/serviceWorker.ts",
+      "!src/types.ts",
+      "!src/mocker.ts",
+      "!<rootDir>/node_modules/"
     ]
   }
 }

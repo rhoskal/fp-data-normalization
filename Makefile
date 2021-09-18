@@ -2,7 +2,7 @@
 # -------------------
 
 APP_NAME = `node -p "require('./package.json').name"`
-GIT_BRANCH=`git rev-parse --abbrev-ref HEAD`
+GIT_BRANCH =`git rev-parse --abbrev-ref HEAD`
 GIT_REVISION = `git rev-parse HEAD`
 
 # Introspection targets
